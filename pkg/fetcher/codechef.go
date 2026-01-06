@@ -26,19 +26,22 @@ func fetchCodeChef(username string) (Profile, error) {
 	if err != nil {
 		return Profile{}, err
 	}
+	name := strings.TrimSpace(doc.Find(".user-details-container h1, .m-0.flex.items-center.gap-2 h1").First().Text())
 
 	ratingStr := doc.Find(".rating-number").First().Text()
 	rating, _ := strconv.Atoi(ratingStr)
 
-	stars := doc.Find(".rating").First().Text()
-	stars = strings.TrimSpace(stars)
+	starsCount := doc.Find(".rating-header .rating-star span").Length()
+	stars := fmt.Sprintf("%d★", starsCount)
 
-	solvedText := doc.Find(".rating-data-content h3").Text()
+	solvedText := doc.Find(".rating-data-section h3").Last().Text()
 	solvedCount := extractNumber(solvedText)
+
 
 	return Profile{
 		UserName:    username,
 		Platform:    "CodeChef",
+		Name:        name,
 		Rating:      rating,
 		Rank:        stars,
 		SolvedCount: solvedCount,
